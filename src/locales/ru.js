@@ -4,9 +4,9 @@ export default {
             en: 'English',
             ru: 'Русский',
         },
-    error: {
-        invalidUrl: 'Ссылка должна быть валидным URL',
-        alreadyExist: 'RSS уже существует',
+        error: {
+            invalidUrl: 'Ссылка должна быть валидным URL',
+            alreadyExist: 'RSS уже существует',
     },    
     },
 }
