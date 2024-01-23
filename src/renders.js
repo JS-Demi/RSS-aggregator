@@ -15,7 +15,7 @@ const feedsRender = (data) => {
     return feed;
 }
 
-const postsRender = (data, modal) => {
+const postsRender = (data, modal, i18n) => {
     const posts = data.map(({ id, title, description, link }) => {
         const li = document.createElement('li');
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0')
@@ -32,6 +32,7 @@ const postsRender = (data, modal) => {
         button.dataset.id = id;
         button.dataset.bsToggle = 'modal';
         button.dataset.bsTarget = '#modal';
+        button.textContent = i18n.t('view')
         button.addEventListener('click', () => {
             const modalTitle = modal.querySelector('.modal-title');
             modalTitle.textContent = title;

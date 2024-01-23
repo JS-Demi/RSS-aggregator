@@ -6,7 +6,8 @@ import i18n from 'i18next';
 import view, { View } from './view.js';
 import resources from './locales/lang.js';
 import parseRss from './parser.js';
-import encoding from './encodingForUrl.js';
+import encodeUrl from './encodingForUrl.js';
+import checkUpdates from './checkUpdates.js';
 
 const app = async () => {
   const elements = {
@@ -40,6 +41,8 @@ const app = async () => {
     },
     requested: [],
     feeds: [],
+    posts: [],
+    lastPostId: 0,
   };
 
   const i18nInstance = i18n.createInstance();
@@ -51,7 +54,7 @@ const app = async () => {
       const buildTree = new View();
       buildTree.init(i18nInstance, elements);
       const state = onChange(initialState, view(i18nInstance, elements));
-
+      checkUpdates(state);
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const url = input.value;
@@ -64,22 +67,21 @@ const app = async () => {
         validate
           .then(() => {
             state.form.state = 'sending';
-            const encodingUrl = encoding(url);
+            const encodingUrl = encodeUrl(url);
             const request = axios.get(encodingUrl);
             return request;
           })
           .then((response) => {
-              const content = response.data.contents
-              const { feed, posts } = parseRss(content);
+              const { feed, posts } = parseRss(response, state.lastPostId);
               state.feeds.unshift(feed);
-              state.feeds.posts = posts;
+              state.posts.unshift(...posts);
               state.form.error = null;
               state.form.state = 'sent'
-            state.form.state = 'filling';
-            state.requested.push({ id, url });
+              state.requested.push({ id, url });
+              state.form.state = 'filling';
           })
           .catch((err) => {
-            state.form.error = err.message;
+            state.form.error = err.message === 'Network Error' ? 'network' : err.message;
             state.form.state = 'error';
           });
       });
