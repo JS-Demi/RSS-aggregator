@@ -20,6 +20,5 @@ export default (response, feedId) => {
         feedId, title, description, link,
     };
   });
-  posts;
 return { feed, posts };
 };
