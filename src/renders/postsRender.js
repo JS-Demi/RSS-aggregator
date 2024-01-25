@@ -24,8 +24,9 @@ const postsRender = (data, elements, i18n) => {
       modalTitle.textContent = title;
       const modalBody = modalContainer.querySelector('.modal-body');
       modalBody.textContent = description;
-      modalContainer.querySelector('a').href = link;
-      modalContainer.classList.add('show');
+      modalContainer.addEventListener('shown.bs.modal', () => {
+        modalContainer.querySelector('a').href = link;
+      });
       const { target } = e;
       target.previousElementSibling.classList.replace('fw-bold', 'fw-normal');
       target.previousElementSibling.classList.add('link-secondary');

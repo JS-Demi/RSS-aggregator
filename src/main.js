@@ -2,7 +2,8 @@ import { string, object } from 'yup';
 import axios from 'axios';
 import onChange from 'on-change';
 import i18n from 'i18next';
-import view, { View } from './view.js';
+import view from './view.js';
+import InitView from './init.js';
 import elements from './utilites/elements.js';
 import resources from './locales/lang.js';
 import parseRss from './utilites/parser.js';
@@ -31,8 +32,8 @@ export default () => {
     resources,
   })
     .then(() => {
-      const buildTree = new View();
-      buildTree.init(i18nInstance, elements);
+      const buildTree = new InitView(i18nInstance, elements);
+      buildTree.init();
       const state = onChange(initialState, view(i18nInstance, elements));
       checkUpdates(state);
       form.addEventListener('submit', (e) => {

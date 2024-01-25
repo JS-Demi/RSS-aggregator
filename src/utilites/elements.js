@@ -1,5 +1,5 @@
 export default {
-  title: document.querySelector('h1'),
+  title: document.querySelector('section h1'),
   description: document.querySelector('.lead'),
   label: document.querySelector('label'),
   addButton: document.querySelector('.rss-form .btn-primary'),
