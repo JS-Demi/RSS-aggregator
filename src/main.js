@@ -3,47 +3,28 @@ import axios from 'axios';
 import onChange from 'on-change';
 import i18n from 'i18next';
 import view, { View } from './view.js';
+import elements from './utilites/elements.js';
 import resources from './locales/lang.js';
 import parseRss from './utilites/parser.js';
 import encodeUrl from './utilites/encodingForUrl.js';
 import checkUpdates from './checkUpdates.js';
 
-const app = async () => {
-  const elements = {
-    title: document.querySelector('h1'),
-    description: document.querySelector('.lead'),
-    label: document.querySelector('label'),
-    addButton: document.querySelector('.rss-form .btn-primary'),
-    exampleLink: document.querySelector('.example'),
-    readButton: document.querySelector('.modal-footer .btn-primary'),
-    closeButton: document.querySelector('.modal-footer .btn-secondary'),
-    input: document.querySelector('#url-input'),
-    feedback: document.querySelector('.feedback'),
-    form: document.querySelector('.rss-form'),
-    postsContainer: document.querySelector('.posts'),
-    feedsContainer: document.querySelector('.feeds'),
-    modalContainer: document.querySelector('#modal'),
-  };
+const initialState = {
+  defaultLanguage: 'ru',
+  form: {
+    state: 'filling',
+    error: null,
+    valid: null,
+  },
+  feeds: [],
+  posts: [],
+  lastFeedId: 0,
+  viewedPosts: [],
+};
 
-  const {
-    input,
-    form,
-    postsContainer,
-  } = elements;
+const { input, form, postsContainer } = elements;
 
-  const initialState = {
-    defaultLanguage: 'ru',
-    form: {
-      state: 'filling',
-      error: null,
-      valid: null,
-    },
-    feeds: [],
-    posts: [],
-    lastFeedId: 0,
-    viewedPosts: [],
-  };
-
+export default () => {
   const i18nInstance = i18n.createInstance();
   i18nInstance.init({
     lng: 'ru',
@@ -98,4 +79,3 @@ const app = async () => {
       });
     });
 };
-export default app;
