@@ -1,3 +1,5 @@
+import { t } from "i18next";
+
 const feedsRender = (data) => {
     const feed = data.map(({ title, description }) => {
         const li = document.createElement('li');
@@ -33,14 +35,22 @@ const postsRender = (data, modal, i18n) => {
         button.dataset.bsToggle = 'modal';
         button.dataset.bsTarget = '#modal';
         button.textContent = i18n.t('view')
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
             const modalTitle = modal.querySelector('.modal-title');
             modalTitle.textContent = title;
             const modalBody = modal.querySelector('.modal-body');
             modalBody.textContent = description;
             modal.querySelector('a').href = link
             modal.classList.add('show');
+            const { target } = e;
+            target.previousElementSibling.classList.replace('fw-bold', 'fw-normal');
+            target.previousElementSibling.classList.add('link-secondary');
         });
+        a.addEventListener('click', (e) => {
+            const { target } = e;
+            target.classList.replace('fw-bold', 'fw-normal');
+            target.classList.add('link-secondary');
+        })
         li.append(a, button);
         return li;
     });

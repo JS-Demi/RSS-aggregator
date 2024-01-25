@@ -1,5 +1,21 @@
 import { feedsRender, postsRender } from "./renders.js";
 
+
+const createCard = () => {
+  const card = document.createElement('div');
+  card.classList.add('card', 'border-0');
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+  const h2 = document.createElement('h2');
+  h2.classList.add('card-title', 'h4');
+  const ul = document.createElement('ul');
+  ul.classList.add('list-group', 'border-0', 'rounded-0');
+  card.append(cardBody);
+  cardBody.append(h2);
+  card.append(ul);
+  return card;
+}
+
 export class View {
     constructor() {
       this.i18n = null;
@@ -17,20 +33,20 @@ export class View {
         exampleLink,
         readButton,
         closeButton,
-        feeds,
-        posts,
-        modal,
+        feedsContainer,
+        postsContainer,
+        modalContainer,
       } = this.elements;
-      modal.querySelectorAll('button')
+      modalContainer.querySelectorAll('button')
       .forEach((element) => {
           element.addEventListener('click', () => {
-              modal.classList.remove('show');
+              modalContainer.classList.remove('show');
           });
       });
       const feedsCard = createCard();
       const postsCard = createCard();
-      feeds.append(feedsCard);
-      posts.append(postsCard);
+      feedsContainer.append(feedsCard);
+      postsContainer.append(postsCard);
       title.textContent = this.i18n.t('title');
       description.textContent = this.i18n.t('description');
       label.textContent = this.i18n.t('label');
@@ -48,9 +64,9 @@ export default (i18nextInstance, elements) => (path, value) => {
         input,
         feedback,
         addButton,
-        feeds,
-        posts,
-        modal,
+        feedsContainer,
+        postsContainer,
+        modalContainer,
     } = elements
   switch (path) {
     case 'form.error':
@@ -75,8 +91,8 @@ export default (i18nextInstance, elements) => (path, value) => {
             input.classList.remove('is-invalid');
             feedback.classList.replace('text-danger', 'text-success')
             feedback.textContent = i18nextInstance.t('success');
-            feeds.querySelector('.card-title').textContent = i18nextInstance.t('feeds');
-            posts.querySelector('.card-title').textContent = i18nextInstance.t('posts');
+            feedsContainer.querySelector('.card-title').textContent = i18nextInstance.t('feeds');
+            postsContainer.querySelector('.card-title').textContent = i18nextInstance.t('posts');
             break;    
          case 'error':
             addButton.removeAttribute('disabled');
@@ -87,28 +103,23 @@ export default (i18nextInstance, elements) => (path, value) => {
       break;
       case 'feeds':
         const actualFeeds = feedsRender(value);
-      feeds.querySelector('ul').replaceChildren(...actualFeeds);
+      feedsContainer.querySelector('ul').replaceChildren(...actualFeeds);
       break;
       case 'posts':
-        const actualPosts = postsRender(value, modal, i18nextInstance);
-        posts.querySelector('ul').replaceChildren(...actualPosts);
+        const actualPosts = postsRender(value, modalContainer, i18nextInstance);
+        postsContainer.querySelector('ul').replaceChildren(...actualPosts);
         break;
+        case 'viewedPosts':
+          const viewed = new Set(value);
+          postsContainer.querySelectorAll('a').forEach((post) => {
+            const link = post.getAttribute('href');
+            if (viewed.has(link)) {
+              post.classList.replace('fw-bold', 'fw-normal');
+              post.classList.add('link-secondary');
+            }
+          })
+          break;
     default: 
     console.log(`unknwown ${path}`);
   }
 };
-
-const createCard = () => {
-    const card = document.createElement('div');
-    card.classList.add('card', 'border-0');
-    const cardBody = document.createElement('div');
-    cardBody.classList.add('card-body');
-    const h2 = document.createElement('h2');
-    h2.classList.add('card-title', 'h4');
-    const ul = document.createElement('ul');
-    ul.classList.add('list-group', 'border-0', 'rounded-0');
-    card.append(cardBody);
-    cardBody.append(h2);
-    card.append(ul);
-    return card;
-}

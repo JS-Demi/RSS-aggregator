@@ -21,15 +21,16 @@ const app = async () => {
     input: document.querySelector('#url-input'),
     feedback: document.querySelector('.feedback'),
     form: document.querySelector('.rss-form'),
-    posts: document.querySelector('.posts'),
-    feeds: document.querySelector('.feeds'),
-    modal: document.querySelector('#modal'),
+    postsContainer: document.querySelector('.posts'),
+    feedsContainer: document.querySelector('.feeds'),
+    modalContainer: document.querySelector('#modal'),
   };
 
   const {
     input,
     feedback,
     form,
+    postsContainer,
   } = elements;
 
   const initialState = {
@@ -39,10 +40,10 @@ const app = async () => {
       error: null,
       valid: null,
     },
-    requested: [],
     feeds: [],
     posts: [],
-    lastPostId: 0,
+    lastFeedId: 0,
+    viewedPosts: [],
   };
 
   const i18nInstance = i18n.createInstance();
@@ -53,17 +54,16 @@ const app = async () => {
     .then(() => {
       const buildTree = new View();
       buildTree.init(i18nInstance, elements);
-      const state = onChange(initialState, view(i18nInstance, elements));
+      const state = onChange(initialState, view(i18nInstance, elements, state));
       checkUpdates(state);
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const url = input.value;
-        const requested = state.requested.map(({ url }) => url);
+        const requested = state.feeds.map(({ url }) => url);
         const urlSchema = object({
           url: string().url('invalidUrl').notOneOf(requested, 'alreadyExist'),
         });
         const validate = urlSchema.validate({ url });
-        const id = uniqueId();
         validate
           .then(() => {
             state.form.state = 'sending';
@@ -72,15 +72,25 @@ const app = async () => {
             return request;
           })
           .then((response) => {
-              const { feed, posts } = parseRss(response, state.lastPostId);
-              state.feeds.unshift(feed);
+            const id = state.lastFeedId + 1;
+              return parseRss(response, id)
+          })
+          .then((data) => {
+            const { 
+              feed: { id, title, description },
+              posts } = data;
+              const viewed = [...postsContainer.querySelectorAll('.link-secondary')]
+              .map((post) => post.getAttribute('href'));
+              state.feeds.unshift({ id, url, title, description });
               state.posts.unshift(...posts);
+              state.viewedPosts.push(...viewed)
               state.form.error = null;
               state.form.state = 'sent'
-              state.requested.push({ id, url });
               state.form.state = 'filling';
+              state.lastFeedId = id;
           })
           .catch((err) => {
+            console.log(err)
             state.form.error = err.message === 'Network Error' ? 'network' : err.message;
             state.form.state = 'error';
           });

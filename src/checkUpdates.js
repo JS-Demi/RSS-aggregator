@@ -4,7 +4,7 @@ import parseRss from "./parser.js"
 
 const checkUpdates = (state) => {
         
-        const requests = state.requested.map(({ url }) => {  
+        const requests = state.feeds.map(({ url }) => {  
             const encodingUrl = encodeUrl(url);
             const request = axios.get(encodingUrl);
             request.catch((err) => {
@@ -18,15 +18,17 @@ const checkUpdates = (state) => {
     promise
     .then((responses) => {
         const currentPosts = state.posts.map(({ link }) => link);
-        const [updatedPosts] = responses.map((response) => {
-                const { posts } = parseRss(response)
+        const updatedPosts = responses.map((response, index) => {
+                const { posts } = parseRss(response, index + 1)
                 return posts;
         })
-        if (state.requested[0]) {
-        const newPosts = updatedPosts
-        .filter(({ link }) => !currentPosts.includes(link));
+        if (state.feeds[0]) {
+        const newPosts = updatedPosts.flat().filter(({ link }) => !currentPosts.includes(link));
+        const clicked = [...document.querySelectorAll('.link-secondary')];
+        const viewed = clicked.map((post) => post.getAttribute('href'))
                 if (newPosts[0]) {
                     state.posts.unshift(...newPosts);
+                    state.viewedPosts.push(...viewed);
                 }
             }
             })
