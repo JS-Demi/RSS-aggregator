@@ -1,2 +1,16 @@
 /node_modules/
 .eslintrc.cjs
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+playwright.config.js
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/tests
+/tests-examples/
+playwright.config.js
+.github/workflows/playwright.yml
+
