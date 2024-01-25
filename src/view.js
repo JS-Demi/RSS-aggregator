@@ -1,6 +1,8 @@
-import {
-  errorRender, feedsRender, postsRender, stateRender, viewedPostsRender,
-} from './renders.js';
+import errorRender from './renders/errorRender.js';
+import stateRender from './renders/stateRender.js';
+import postsRender from './renders/postsRender.js';
+import feedsRender from './renders/feedsRender.js';
+import viewedPostsRender from './renders/viewedPostsRender.js';
 
 const createCard = () => {
   const card = document.createElement('div');

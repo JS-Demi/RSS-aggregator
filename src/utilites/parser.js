@@ -2,7 +2,6 @@ export default (response, feedId) => {
   const parse = new DOMParser();
   const normalize = parse.parseFromString(response.data.contents, 'text/xml');
   const parseError = normalize.querySelector('parsererror');
-  console.log(normalize)
   if (parseError) {
     throw new Error('invalidRss');
   }
