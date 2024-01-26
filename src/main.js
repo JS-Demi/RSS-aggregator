@@ -47,7 +47,7 @@ export default () => {
             const request = axios.get(encodingUrl);
             return request;
           })
-          .then((response) => parseRss(response))
+          .then((response) => parseRss(response, url))
           .then((data) => {
             const { feed, posts } = data;
             state.feeds.unshift(feed);

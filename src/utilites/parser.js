@@ -1,11 +1,10 @@
-export default (response) => {
+export default (response, url) => {
   const parse = new DOMParser();
   const normalize = parse.parseFromString(response.data.contents, 'text/xml');
   const parseError = normalize.querySelector('parsererror');
   if (parseError) {
     throw new Error('invalidRss');
   }
-  const { url } = response.data.status;
   const feed = {
     url,
     title: normalize.querySelector('channel title').textContent,
@@ -16,9 +15,9 @@ export default (response) => {
       const title = post.querySelector('title').textContent;
       const description = post.querySelector('description').textContent;
       const link = post.querySelector('link').textContent;
-      const feedLink = url;
+      const feedUrl = url;
       return {
-        feedLink, title, description, link,
+        feedUrl, title, description, link,
       };
     });
   return { feed, posts };

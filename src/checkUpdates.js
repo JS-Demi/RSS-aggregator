@@ -21,7 +21,8 @@ const checkUpdates = (state) => {
     .then((responses) => {
       const currentPosts = state.posts.map(({ link }) => link);
       const updatedPosts = responses.flatMap((response) => {
-        const { posts } = parseRss(response);
+        const { url } = response.data.status;
+        const { posts } = parseRss(response, url);
         return posts;
       });
       if (state.feeds[0]) {
