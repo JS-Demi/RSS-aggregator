@@ -1,6 +1,9 @@
 import axios from 'axios';
 import encodeUrl from './utilites/encodingForUrl.js';
 import parseRss from './utilites/parser.js';
+import viewedPostsRender from './renders/viewedPostsRender.js';
+import elements from './utilites/elements.js';
+import { linkController, modalController } from './utilites/controllers.js';
 
 const checkUpdates = (state) => {
   const requests = state.feeds.map(({ url }) => {
@@ -17,17 +20,18 @@ const checkUpdates = (state) => {
   promise
     .then((responses) => {
       const currentPosts = state.posts.map(({ link }) => link);
-      const updatedPosts = responses.map((response, index) => {
-        const { posts } = parseRss(response, index + 1);
+      const updatedPosts = responses.flatMap((response) => {
+        const { posts } = parseRss(response);
         return posts;
       });
       if (state.feeds[0]) {
-        const newPosts = updatedPosts.flat().filter(({ link }) => !currentPosts.includes(link));
-        const clicked = [...document.querySelectorAll('.link-secondary')];
-        const viewed = clicked.map((post) => post.getAttribute('href'));
+        const newPosts = updatedPosts.filter(({ link }) => !currentPosts.includes(link));
+        const { viewedPosts } = state;
         if (newPosts[0]) {
           state.posts.unshift(...newPosts);
-          state.viewedPosts.push(...viewed);
+          modalController(elements.postsContainer, state);
+          linkController(elements.postsContainer, state);
+          viewedPostsRender(viewedPosts, elements.postsContainer);
         }
       }
     })

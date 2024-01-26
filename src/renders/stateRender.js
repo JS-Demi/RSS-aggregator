@@ -23,7 +23,7 @@ const stateRender = (value, elements, i18nextInstance) => {
       addButton.removeAttribute('disabled');
       break;
     default:
-      console.log(`unknow process ${value}`);
+      throw new Error(`Unknown process ${value}`);
   }
 };
 export default stateRender;

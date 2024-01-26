@@ -1,14 +1,16 @@
-import { string, object } from 'yup';
 import axios from 'axios';
 import onChange from 'on-change';
 import i18n from 'i18next';
 import view from './view.js';
-import InitView from './init.js';
+import buildCardsTree from './init.js';
 import elements from './utilites/elements.js';
 import resources from './locales/lang.js';
 import parseRss from './utilites/parser.js';
 import encodeUrl from './utilites/encodingForUrl.js';
 import checkUpdates from './checkUpdates.js';
+import validate from './utilites/validate.js';
+import { linkController, modalController } from './utilites/controllers.js';
+import viewedPostsRender from './renders/viewedPostsRender.js';
 
 const initialState = {
   defaultLanguage: 'ru',
@@ -19,58 +21,44 @@ const initialState = {
   },
   feeds: [],
   posts: [],
-  lastFeedId: 0,
   viewedPosts: [],
 };
 
-const { input, form, postsContainer } = elements;
-
 export default () => {
+  const { input, form, postsContainer } = elements;
   const i18nInstance = i18n.createInstance();
   i18nInstance.init({
     lng: 'ru',
     resources,
   })
     .then(() => {
-      const buildTree = new InitView(i18nInstance, elements);
-      buildTree.init();
+      buildCardsTree(i18nInstance, elements);
       const state = onChange(initialState, view(i18nInstance, elements));
       checkUpdates(state);
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const url = input.value;
         const requested = state.feeds.map(({ url: link }) => link);
-        const urlSchema = object({
-          url: string().url('invalidUrl').notOneOf(requested, 'alreadyExist'),
-        });
-        const validate = urlSchema.validate({ url });
-        validate
+        const validation = validate(url, requested);
+        validation
           .then(() => {
             state.form.state = 'sending';
             const encodingUrl = encodeUrl(url);
             const request = axios.get(encodingUrl);
             return request;
           })
-          .then((response) => {
-            const id = state.lastFeedId + 1;
-            return parseRss(response, id);
-          })
+          .then((response) => parseRss(response))
           .then((data) => {
-            const {
-              feed: { id, title, description },
-              posts,
-            } = data;
-            const viewed = [...postsContainer.querySelectorAll('.link-secondary')]
-              .map((post) => post.getAttribute('href'));
-            state.feeds.unshift({
-              id, url, title, description,
-            });
+            const { feed, posts } = data;
+            state.feeds.unshift(feed);
+            const { viewedPosts } = state;
             state.posts.unshift(...posts);
-            state.viewedPosts.push(...viewed);
+            modalController(postsContainer, state);
+            linkController(postsContainer, state);
+            viewedPostsRender(viewedPosts, postsContainer);
             state.form.error = null;
             state.form.state = 'sent';
             state.form.state = 'filling';
-            state.lastFeedId = id;
           })
           .catch((err) => {
             console.log(err);

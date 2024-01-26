@@ -17,12 +17,15 @@ export default (i18nextInstance, elements) => (path, value) => {
       feedsRender(value, feedsContainer);
       break;
     case 'posts':
-      postsRender(value, elements, i18nextInstance);
+      postsRender(value, postsContainer, i18nextInstance);
       break;
     case 'viewedPosts':
       viewedPostsRender(value, postsContainer);
       break;
+    case 'lastFeedId':
+      console.log('123');
+      break;
     default:
-      console.log(`unknwown ${path}`);
+      throw new Error(`unknwown ${path}`);
   }
 };
