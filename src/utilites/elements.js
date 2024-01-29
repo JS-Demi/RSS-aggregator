@@ -1,4 +1,4 @@
-export default {
+const getElements = () => ({
   title: document.querySelector('section h1'),
   description: document.querySelector('.lead'),
   label: document.querySelector('label'),
@@ -12,4 +12,5 @@ export default {
   postsContainer: document.querySelector('.posts'),
   feedsContainer: document.querySelector('.feeds'),
   modalContainer: document.querySelector('#modal'),
-};
+});
+export default getElements;

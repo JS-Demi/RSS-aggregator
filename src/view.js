@@ -3,6 +3,7 @@ import stateRender from './renders/stateRender.js';
 import postsRender from './renders/postsRender.js';
 import feedsRender from './renders/feedsRender.js';
 import viewedPostsRender from './renders/viewedPostsRender.js';
+import modalRender from './renders/modalRender.js';
 
 export default (i18nextInstance, elements) => (path, value) => {
   const { feedsContainer, postsContainer } = elements;
@@ -22,8 +23,8 @@ export default (i18nextInstance, elements) => (path, value) => {
     case 'viewedPosts':
       viewedPostsRender(value, postsContainer);
       break;
-    case 'lastFeedId':
-      console.log('123');
+    case 'displayedModal':
+      modalRender(value);
       break;
     default:
       throw new Error(`unknwown ${path}`);

@@ -2,7 +2,7 @@ import axios from 'axios';
 import encodeUrl from './utilites/encodingForUrl.js';
 import parseRss from './utilites/parser.js';
 import viewedPostsRender from './renders/viewedPostsRender.js';
-import elements from './utilites/elements.js';
+import getElements from './utilites/elements.js';
 import { linkController, modalController } from './utilites/controllers.js';
 
 const checkUpdates = (state) => {
@@ -29,10 +29,11 @@ const checkUpdates = (state) => {
         const newPosts = updatedPosts.filter(({ link }) => !currentPosts.includes(link));
         const { viewedPosts } = state;
         if (newPosts[0]) {
+          const { postsContainer } = getElements();
           state.posts.unshift(...newPosts);
-          modalController(elements.postsContainer, state);
-          linkController(elements.postsContainer, state);
-          viewedPostsRender(viewedPosts, elements.postsContainer);
+          modalController(postsContainer, state);
+          linkController(postsContainer, state);
+          viewedPostsRender(viewedPosts, postsContainer);
         }
       }
     })

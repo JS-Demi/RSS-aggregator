@@ -3,7 +3,7 @@ import onChange from 'on-change';
 import i18n from 'i18next';
 import view from './view.js';
 import buildCardsTree from './init.js';
-import elements from './utilites/elements.js';
+import getElements from './utilites/elements.js';
 import resources from './locales/lang.js';
 import parseRss from './utilites/parser.js';
 import encodeUrl from './utilites/encodingForUrl.js';
@@ -22,9 +22,11 @@ const initialState = {
   feeds: [],
   posts: [],
   viewedPosts: [],
+  displayedModal: '',
 };
 
 export default () => {
+  const elements = getElements();
   const { input, form, postsContainer } = elements;
   const i18nInstance = i18n.createInstance();
   i18nInstance.init({

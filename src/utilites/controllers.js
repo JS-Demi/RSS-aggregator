@@ -1,15 +1,14 @@
-const modalController = (postsContainer, state) => {
+const modalController = (postsContainer, currentState) => {
   const buttons = postsContainer.querySelectorAll('button');
   buttons.forEach((button) => {
-    const { posts } = state;
-    const modalContainer = document.querySelector('#modal');
     button.addEventListener('click', (e) => {
       const { target } = e;
       const { link } = target.dataset;
-      const { title, description } = posts.find((post) => post.link === link);
-      modalContainer.querySelector('.modal-title').textContent = title;
-      modalContainer.querySelector('.modal-body').textContent = description;
+      const { posts } = currentState;
+      const currentPost = posts.find((post) => post.link === link);
       const viewedPost = postsContainer.querySelector(`[data-link="${link}"]`).previousElementSibling;
+      const state = currentState;
+      state.displayedModal = currentPost;
       state.viewedPosts.push(viewedPost.href);
     });
   });
